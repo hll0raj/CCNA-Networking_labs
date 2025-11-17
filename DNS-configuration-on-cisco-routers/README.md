@@ -1,0 +1,84 @@
+# 🌐 DNS Client & ARP Cache Lab
+
+## 📋 Overview
+This project demonstrates DNS client configuration and ARP cache behavior using Cisco routers in Packet Tracer. The DNS server is set to 10.10.10.10, and routers (R1, R2, R3) are configured to resolve hostnames.
+
+## 🖼️ Topology Diagram
+![Network Topology](images/Packet.jpg)
+
+## 📊 Device Table
+
+| Device      | Interface     | IP Address     | Role         |
+| ----------- | ------------ | -------------- | ------------|
+| DNS-Server  | F0           | 10.10.10.10    | DNS Server  |
+| R1          | F0/0         | 10.10.10.1     | Router      |
+| R2          | F0/0, F1/0   | 10.10.10.2, 10.10.20.2 | Router |
+| R3          | F0/0         | 10.10.20.1     | Router      |
+
+## 📝 Prerequisites
+- Cisco Packet Tracer (or GNS3)
+- Provided topology file
+- Initial configs files for R1, R2 & R3
+
+## ⚙️ Router Configuration Steps
+
+R1(config)# ip domain-lookup
+R1(config)# ip name-server 10.10.10.10
+
+R2(config)# ip domain-lookup
+R2(config)# ip name-server 10.10.10.10
+
+R3(config)# ip domain-lookup
+R3(config)# ip name-server 10.10.10.10
+
+## ✅ Verification
+
+### 1. 🏓 Ping by Hostname from R1
+- Run: `ping R2`
+- Run: `ping R3`
+- Screenshots here
+![testing connectivity](images/testing-dns.png)
+
+
+### 2. 🏓 Ping by Hostname from R3
+- Run: `ping R1`
+- Run: `ping R2`
+- Screenshots here
+![testing](images/testing_r3.png)
+
+## 🔍 ARP Cache Analysis
+
+### 📌 Expected Behavior
+- ARP entries only for hosts on directly connected networks
+- R1 will not see R3 in ARP cache
+
+### 🖥️ ARP Cache Outputs
+- `show arp` outputs for R1, R2, R3
+- R1
+R1#sh arp
+Protocol  Address          Age (min)  Hardware Addr   Type   Interface
+Internet  10.10.10.1              -   0090.0CD7.0D01  ARPA   FastEthernet0/0
+Internet  10.10.10.2              1   0004.9A96.A9A5  ARPA   FastEthernet0/0
+Internet  10.10.10.10             1   0090.21C6.D284  ARPA   FastEthernet0/0
+- R2
+R2#sh arp
+Protocol  Address          Age (min)  Hardware Addr   Type   Interface
+Internet  10.10.10.1              200 0090.0CD7.0D01  ARPA   FastEthernet0/0
+Internet  10.10.10.2              -   0004.9A96.A9A5  ARPA   FastEthernet0/0
+Internet  10.10.10.10             198 0090.21C6.D284  ARPA   FastEthernet0/0
+Internet  10.10.20.1              200 0030.F2BA.30E7  ARPA   FastEthernet1/0
+Internet  10.10.20.2              -   0060.2FCA.ACA0  ARPA   FastEthernet1/0
+- R3
+R3#sh arp
+Protocol  Address          Age (min)  Hardware Addr   Type   Interface
+Internet  10.10.20.1              -   0030.F2BA.30E7  ARPA   FastEthernet0/0
+Internet  10.10.20.2              201 0060.2FCA.ACA0  ARPA   FastEthernet0/0
+R3#
+## 💡 Key Learnings
+- Routers use ARP for directly connected subnets
+- DNS client settings enable hostname-to-IP resolution
+## 👤 Author
+**Rajnish Kumar**
+- GitHub: [@rajnish-kumar](https://github.com/hll0raj/)
+- Email: rajnishsharma281999@gmail.com
+
