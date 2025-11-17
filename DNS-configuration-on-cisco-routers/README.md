@@ -52,31 +52,52 @@ R3(config)# ip name-server 10.10.10.10
 - ARP entries only for hosts on directly connected networks
 - R1 will not see R3 in ARP cache
 
-### 🖥️ ARP Cache Outputs
-- `show arp` outputs for R1, R2, R3
-- R1
+## 🔍 ARP Cache Outputs
+
+### R1 ARP Cache
+
 R1#sh arp
-Protocol  Address          Age (min)  Hardware Addr   Type   Interface
-Internet  10.10.10.1              -   0090.0CD7.0D01  ARPA   FastEthernet0/0
-Internet  10.10.10.2              1   0004.9A96.A9A5  ARPA   FastEthernet0/0
-Internet  10.10.10.10             1   0090.21C6.D284  ARPA   FastEthernet0/0
-- R2
+Protocol Address Age (min) Hardware Addr Type Interface
+Internet 10.10.10.1 - 0090.0CD7.0D01 ARPA FastEthernet0/0
+Internet 10.10.10.2 1 0004.9A96.A9A5 ARPA FastEthernet0/0
+Internet 10.10.10.10 1 0090.21C6.D284 ARPA FastEthernet0/0
+
+text
+
+**Analysis:** R1 has ARP entries for devices on its directly connected network (10.10.10.0/24) including R2 and the DNS server. R1 does not have an entry for R3 (10.10.20.1) because it is not directly connected to that network.
+
+### R2 ARP Cache
+
 R2#sh arp
-Protocol  Address          Age (min)  Hardware Addr   Type   Interface
-Internet  10.10.10.1              200 0090.0CD7.0D01  ARPA   FastEthernet0/0
-Internet  10.10.10.2              -   0004.9A96.A9A5  ARPA   FastEthernet0/0
-Internet  10.10.10.10             198 0090.21C6.D284  ARPA   FastEthernet0/0
-Internet  10.10.20.1              200 0030.F2BA.30E7  ARPA   FastEthernet1/0
-Internet  10.10.20.2              -   0060.2FCA.ACA0  ARPA   FastEthernet1/0
-- R3
+Protocol Address Age (min) Hardware Addr Type Interface
+Internet 10.10.10.1 200 0090.0CD7.0D01 ARPA FastEthernet0/0
+Internet 10.10.10.2 - 0004.9A96.A9A5 ARPA FastEthernet0/0
+Internet 10.10.10.10 198 0090.21C6.D284 ARPA FastEthernet0/0
+Internet 10.10.20.1 200 0030.F2BA.30E7 ARPA FastEthernet1/0
+Internet 10.10.20.2 - 0060.2FCA.ACA0 ARPA FastEthernet1/0
+
+text
+
+**Analysis:** R2 is connected to both subnets (10.10.10.0/24 and 10.10.20.0/24), so it has ARP entries for devices on both networks. R2 serves as the gateway between the two networks.
+
+### R3 ARP Cache
+
 R3#sh arp
-Protocol  Address          Age (min)  Hardware Addr   Type   Interface
-Internet  10.10.20.1              -   0030.F2BA.30E7  ARPA   FastEthernet0/0
-Internet  10.10.20.2              201 0060.2FCA.ACA0  ARPA   FastEthernet0/0
+Protocol Address Age (min) Hardware Addr Type Interface
+Internet 10.10.20.1 - 0030.F2BA.30E7 ARPA FastEthernet0/0
+Internet 10.10.20.2 201 0060.2FCA.ACA0 ARPA FastEthernet0/0
 R3#
-## 💡 Key Learnings
-- Routers use ARP for directly connected subnets
-- DNS client settings enable hostname-to-IP resolution
+
+text
+
+**Analysis:** R3 only has ARP entries for devices on its directly connected network (10.10.20.0/24). R3 does not have entries for devices in the 10.10.10.0/24 network because it is not directly connected to that subnet.
+
+### 📌 Key Observations
+- ARP operates only on directly connected networks; routers do not forward ARP requests
+- Devices with '-' age are the router's own interfaces (Age shows as '-')
+- Age (min) shows how long ago the ARP entry was learned (higher age = older entry)
+- Each router only maintains ARP entries for hosts on its directly connected subnets
+
 ## 👤 Author
 **Rajnish Kumar**
 - GitHub: [@rajnish-kumar](https://github.com/hll0raj/)
